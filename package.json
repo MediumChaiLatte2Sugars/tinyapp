@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/MediumChaiLatte2Sugars/tinyapp/issues"
   },
-  "homepage": "https://github.com/MediumChaiLatte2Sugars/tinyapp#readme"
+  "homepage": "https://github.com/MediumChaiLatte2Sugars/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
