@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+  <header>
+    <%- include('partials/_header') %>
+  </header>
   <head>
     <!-- Bootstrap CSS -->
     <link
@@ -18,9 +21,6 @@
         <h5 class="card-title">TinyURL for: <%= longURL %></h5>
         <p class="card-text">
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a> 
-        </p>
-        <p class="card-text">
-          <a href="#">Create New</a>
         </p>
       </div>
       <div class="card-footer text-muted"></div>
