@@ -39,7 +39,9 @@ app.get("/hello", (req, res) => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (to be replaced)
+  newSiteID = generateRandomString();
+  urlDatabase[newSiteID] = req.body.longURL;
+  res.redirect(`/urls/${newSiteID}`); // Redirect to new URL page
 });
 
 app.listen(PORT, () => {
