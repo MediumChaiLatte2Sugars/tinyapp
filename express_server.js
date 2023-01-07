@@ -45,3 +45,20 @@ app.post("/urls", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+/**
+ * Generates and returns a string of 6 random alphanumeric characters
+ */
+function generateRandomString() {
+  const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const STRING_LENGTH = 6;
+
+  let result = ' ';
+  const charactersLength = characters.length;
+  
+  for ( let i = 0; i < STRING_LENGTH; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+
+  return result;
+}
