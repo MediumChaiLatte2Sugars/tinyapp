@@ -49,6 +49,12 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${newSiteID}`); // Redirect to new URL page
 });
 
+app.post("/urls/:id/delete", (req, res) => {
+  console.log(req.body); // Log the POST request body to the console
+  delete urlDatabase[req.params.id];
+  res.redirect("/urls"); 
+});
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
