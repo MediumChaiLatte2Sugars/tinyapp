@@ -52,6 +52,12 @@ app.post("/urls", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   delete urlDatabase[req.params.id];
+  res.redirect("/urls"); // Redirect to new URL page
+});
+
+app.post("/urls/:id", (req, res) => {
+  console.log(req.body); // Log the POST request body to the console
+  urlDatabase[req.params.id] = req.body.editURL;
   res.redirect("/urls"); 
 });
 
