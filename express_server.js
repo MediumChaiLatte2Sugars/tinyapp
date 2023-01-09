@@ -63,8 +63,7 @@ app.post("/urls/:id", (req, res) => {
 
 app.post("/login", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  const username = req.body.username;
-  res.cookie("username", username);
+  res.cookie("username", req.body.username);
   res.redirect("/urls"); 
 });
 
