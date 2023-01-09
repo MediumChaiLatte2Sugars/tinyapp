@@ -22,7 +22,6 @@
       <!--Login form if no user currently logged in-->
       <form class="form-inline" method="POST" action="/login">
         <div class="form-group">
-          <label for="username">Username (<%= username %>):</label>
           <input
             class="form-control"
             type="text"
@@ -37,7 +36,7 @@
       <!--Display current logged in user with option to logout-->
       <form class="form-inline" method="POST" action="/logout">
         <div class="form-group">
-          <label for="logout">Currently logged in as <%= username %></label>
+          <label for="logout">Logged in as: <%= username %>!</label>
           <button name="logout" type="submit" class="btn btn-primary">Logout</button>
         </div>
       </form>
