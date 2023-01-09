@@ -29,15 +29,15 @@
             style="width: 150px; height: 2em; margin: 0.33em"
             placeholder="Username"
           />
-          <button type="submit" class="btn btn-primary">Login</button>
+          <button type="submit" class="btn btn-outline-dark">Login</button>
         </div>
       </form>
     <% } else{ %>
       <!--Display current logged in user with option to logout-->
       <form class="form-inline" method="POST" action="/logout">
         <div class="form-group">
-          <label for="logout">Logged in as: <%= username %>!</label>
-          <button name="logout" type="submit" class="btn btn-primary">Logout</button>
+          <label for="logout" class="font-weight-bold mr-2">Logged in as: <%= username %>!</label>
+          <button name="logout" type="submit" class="btn btn-outline-dark">Logout</button>
         </div>
       </form>
     <% } %>
