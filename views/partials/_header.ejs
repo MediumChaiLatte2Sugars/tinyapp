@@ -18,18 +18,29 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
-    <form class="form-inline" method="POST" action="/login">
-      <div class="form-group">
-        <label for="username">Username:</label>
-        <input
-          class="form-control"
-          type="text"
-          name="username"
-          style="width: 150px; height: 2em; margin: 0.33em"
-          placeholder="Username"
-        />
-        <button type="submit" class="btn btn-primary">Login</button>
-      </div>
-    </form>
+    <% if (!username) {%>
+      <!--Login form if no user currently logged in-->
+      <form class="form-inline" method="POST" action="/login">
+        <div class="form-group">
+          <label for="username">Username (<%= username %>):</label>
+          <input
+            class="form-control"
+            type="text"
+            name="username"
+            style="width: 150px; height: 2em; margin: 0.33em"
+            placeholder="Username"
+          />
+          <button type="submit" class="btn btn-primary">Login</button>
+        </div>
+      </form>
+    <% } else{ %>
+      <!--Display current logged in user with option to logout-->
+      <form class="form-inline" method="POST" action="/logout">
+        <div class="form-group">
+          <label for="logout">Currently logged in as <%= username %></label>
+          <button name="logout" type="submit" class="btn btn-primary">Logout</button>
+        </div>
+      </form>
+    <% } %>
   </nav>
 </header>
