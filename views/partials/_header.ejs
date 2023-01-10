@@ -19,17 +19,15 @@
       </div>
     </div>
     <% if (!user) {%>
-      <!--Login form if no user currently logged in-->
-      <form class="form-inline" method="POST" action="/login">
+      <!--Registration and Login buttons if no user logged in-->
+      <form class="form-inline mr-2" method="GET" action="/register">
         <div class="form-group">
-          <input
-            class="form-control"
-            type="text"
-            name="username"
-            style="width: 150px; height: 2em; margin: 0.33em"
-            placeholder="Username"
-          />
-          <button type="submit" class="btn btn-outline-dark">Login</button>
+          <button type="submit" class="btn btn-outline-dark font-weight-bold">Register</button>
+        </div>
+      </form>
+      <form class="form-inline" method="GET" action="/login">
+        <div class="form-group">
+          <button type="submit" class="btn btn-outline-dark font-weight-bold">Login</button>
         </div>
       </form>
     <% } else{ %>
