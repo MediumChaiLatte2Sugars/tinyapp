@@ -59,11 +59,17 @@ app.get("/hello", (req, res) => {
 
 app.get("/register", (req, res) => {
   // TODO: Add check for current user
-  res.render("account_registration");
+  const templateVars = {
+    user: users[req.cookies.userID],
+  }
+  res.render("account_registration", templateVars);
 });
 
 app.get("/login", (req, res) => {
-  res.render("account_login");
+  const templateVars = {
+    user: users[req.cookies.userID],
+  }
+  res.render("account_login", templateVars);
 });
 
 app.post("/urls", (req, res) => {
