@@ -87,7 +87,21 @@ app.post("/urls/:id", (req, res) => {
 
 app.post("/login", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  res.cookie("username", req.body.username);
+  const { email, password } = req.body;
+  
+  let user = userLookup(email);
+
+  // Check if current user exists in database
+  if (!user){
+    return res.status(403).send("No account is registered with that email!");
+  }
+
+  // Check if password is correct
+  if (user.password !== password){
+    return res.status(403).send("Incorrect password!")
+  }
+  
+  res.cookie("userID", user.id);
   res.redirect("/urls"); 
 });
 
