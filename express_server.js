@@ -108,7 +108,7 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   res.clearCookie("userID");
-  res.redirect("/urls"); 
+  res.redirect("/login"); 
 });
 
 app.post("/register", (req, res) => {
