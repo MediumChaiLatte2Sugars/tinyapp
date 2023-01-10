@@ -20,16 +20,10 @@
     </div>
     <% if (!user) {%>
       <!--Registration and Login buttons if no user logged in-->
-      <form class="form-inline mr-2" method="GET" action="/register">
-        <div class="form-group">
-          <button type="submit" class="btn btn-outline-dark font-weight-bold">Register</button>
-        </div>
-      </form>
-      <form class="form-inline" method="GET" action="/login">
-        <div class="form-group">
-          <button type="submit" class="btn btn-outline-dark font-weight-bold">Login</button>
-        </div>
-      </form>
+      <div class="navbar-nav">
+        <a class="nav-item nav-link" href="/register">Register</a>
+        <a class="nav-item nav-link" href="/login">Login</a>
+      </div>
     <% } else{ %>
       <!--Display current logged in user with option to logout-->
       <form class="form-inline" method="POST" action="/logout">
