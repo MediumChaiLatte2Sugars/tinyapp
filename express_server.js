@@ -116,7 +116,7 @@ function generateRandomString() {
   const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const STRING_LENGTH = 6;
 
-  let result = '';
+  let result = ' ';
   const charactersLength = characters.length;
   
   for ( let i = 0; i < STRING_LENGTH; i++ ) {
