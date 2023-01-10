@@ -93,6 +93,18 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls"); 
 });
 
+app.post("/register", (req, res) => {
+  const userID = `user-${generateRandomString()}`;
+  users[userID] = {
+    id: userID,
+    email: req.body.email,
+    password: req.body.password,
+  }
+  res.cookie("userID", userID);
+  console.log("Current user database:", users);
+  res.redirect("/urls");
+});
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
@@ -104,7 +116,7 @@ function generateRandomString() {
   const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const STRING_LENGTH = 6;
 
-  let result = ' ';
+  let result = '';
   const charactersLength = characters.length;
   
   for ( let i = 0; i < STRING_LENGTH; i++ ) {
