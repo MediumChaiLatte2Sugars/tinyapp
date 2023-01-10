@@ -95,6 +95,17 @@ app.post("/logout", (req, res) => {
 
 app.post("/register", (req, res) => {
   const userID = `user-${generateRandomString()}`;
+
+  // Check if email and password are defined
+  if (req.body.email === "" || req.body.password === ""){
+    res.status(400).send("Invalid Request!");
+  }
+
+  // Check if email already exists in database
+  if (userLookup(req.body.email)){
+    res.status(400).send("Invalid Reuqest! User exists!");
+  }
+
   users[userID] = {
     id: userID,
     email: req.body.email,
@@ -116,7 +127,7 @@ function generateRandomString() {
   const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const STRING_LENGTH = 6;
 
-  let result = ' ';
+  let result = '';
   const charactersLength = characters.length;
   
   for ( let i = 0; i < STRING_LENGTH; i++ ) {
@@ -124,4 +135,18 @@ function generateRandomString() {
   }
 
   return result;
+}
+
+/**
+ * Helper fucntion for user lookup in database
+ * @param {*} email 
+ * @returns a user object corresponding to email, null otherwise
+ * 
+ */
+function userLookup(email){
+  for (let user in users){ 
+    if (email === users[user].email){
+      return users[user];
+    }
+  }
 }
