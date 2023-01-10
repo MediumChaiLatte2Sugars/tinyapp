@@ -127,7 +127,7 @@ app.post("/register", (req, res) => {
 
   // Check if email already exists in database
   if (userLookup(req.body.email)){
-    res.status(400).send("Invalid Reuqest! User exists!");
+    res.status(400).send("Invalid Request! User exists!");
   }
 
   users[userID] = {
