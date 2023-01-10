@@ -100,14 +100,14 @@ app.post("/login", (req, res) => {
   if (user.password !== password){
     return res.status(403).send("Incorrect password!")
   }
-  
+
   res.cookie("userID", user.id);
   res.redirect("/urls"); 
 });
 
 app.post("/logout", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  res.clearCookie("username");
+  res.clearCookie("userID");
   res.redirect("/urls"); 
 });
 
