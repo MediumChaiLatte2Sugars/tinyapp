@@ -62,6 +62,10 @@ app.get("/register", (req, res) => {
   res.render("account_registration");
 });
 
+app.get("/login", (req, res) => {
+  res.render("account_login");
+});
+
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   newSiteID = generateRandomString();
