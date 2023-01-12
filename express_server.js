@@ -35,6 +35,12 @@ app.get("/urls", (req, res) => {
     urls: urlDatabase,
     user: users[req.cookies.userID],
   }
+
+  // Check if user logged in
+  if (!templateVars.user){
+    return res.status(401).send("Invalid request! Please login to view this page!");
+  }
+  
   res.render("urls_index", templateVars);
 });
 
