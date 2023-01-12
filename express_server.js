@@ -36,6 +36,12 @@ app.get("/urls/new", (req, res) => {
   const templateVars = {
     user: users[req.cookies.userID],
   }
+
+  // Redirect if user not logged in
+  if (!templateVars.user){
+    return res.redirect("/login");
+  }
+
   res.render("urls_new", templateVars);
 });
 
@@ -85,6 +91,12 @@ app.get("/login", (req, res) => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
+
+  // Check if user currenlty logged in
+  if (!users[req.cookies.userID]){
+    return res.status(403).send("Invalid request! Please login to view this page!");
+  }
+  
   newSiteID = generateRandomString();
   urlDatabase[newSiteID] = req.body.longURL;
   res.redirect(`/urls/${newSiteID}`); // Redirect to new URL page
