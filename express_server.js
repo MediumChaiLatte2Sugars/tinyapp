@@ -62,6 +62,11 @@ app.get("/register", (req, res) => {
   const templateVars = {
     user: users[req.cookies.userID],
   }
+
+  // Redirect logged in users /urls page
+  if (templateVars.user){
+    return res.redirect("/urls");
+  }
   res.render("account_registration", templateVars);
 });
 
@@ -69,6 +74,12 @@ app.get("/login", (req, res) => {
   const templateVars = {
     user: users[req.cookies.userID],
   }
+
+  // Redirect logged in users /urls page
+  if (templateVars.user){
+    return res.redirect("/urls");
+  }
+
   res.render("account_login", templateVars);
 });
 
