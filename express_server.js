@@ -46,6 +46,12 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+
+  // Check if URL in database already
+  if (!urlDatabase[req.params.id]){
+    return res.status(404).send("Requested URL Not Found!");
+  }
+
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id],
