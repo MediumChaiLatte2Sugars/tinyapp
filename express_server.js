@@ -40,7 +40,7 @@ app.get("/urls", (req, res) => {
   if (!templateVars.user){
     return res.status(401).send("Invalid request! Please login to view this page!");
   }
-  
+
   res.render("urls_index", templateVars);
 });
 
@@ -221,4 +221,20 @@ function userLookup(email){
       return users[user];
     }
   }
+}
+
+/**
+ * Helper function for obtaining all URLs associated with a
+ * given user id
+ * @param {*} id 
+ * @returns an array of URL strings
+ */
+function urlsForUser(id){
+  let userURLs = [];
+  for (let urlObj of Object.values(urlDatabase)){
+    if (urlObj.userID === id){
+      userURLs.push(urlObj.longURL);
+    }
+  }
+  return userURLs;
 }
