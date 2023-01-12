@@ -150,6 +150,11 @@ app.post("/urls/:id", (req, res) => {
     res.status(404).send("Error: No such link exists!");
   }
 
+  // Check if user signed in
+  if (!req.cookies.userID){
+    res.status(403).send("Invalid Request! Please sign in to view this page!");
+  }
+
   urlDatabase[req.params.id] = {
     longURL: req.body.editURL,
     userID: req.cookies.userID,
