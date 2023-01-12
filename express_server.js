@@ -144,6 +144,12 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.post("/urls/:id", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
+
+  // Check if id exists
+  if (!urlDatabase[req.params.id]){
+    res.status(404).send("Error: No such link exists!");
+  }
+
   urlDatabase[req.params.id] = {
     longURL: req.body.editURL,
     userID: req.cookies.userID,
