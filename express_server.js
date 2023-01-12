@@ -59,9 +59,21 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
 
+  // Check if user logged in
+  if (!req.cookies.userID){
+    return res.status(401).send("Invalid request! Please login to view this page!");
+  }
+
   // Check if URL in database already
   if (!urlDatabase[req.params.id]){
     return res.status(404).send("Requested URL Not Found!");
+  }
+
+  let requestedURL = urlDatabase[req.params.id].longURL;
+
+  // Check if auth to view URL
+  if (!urlsForUser(req.cookies.userID).includes(requestedURL)){
+    return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!")
   }
 
   const templateVars = {
