@@ -94,7 +94,7 @@ app.post("/urls", (req, res) => {
 
   // Check if user currenlty logged in
   if (!users[req.cookies.userID]){
-    return res.status(403).send("Invalid request! Please login to view this page!");
+    return res.status(401).send("Invalid request! Please login to view this page!");
   }
   
   newSiteID = generateRandomString();
