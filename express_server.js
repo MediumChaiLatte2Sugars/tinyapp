@@ -8,8 +8,14 @@ app.set("view engine", "ejs");
 const users = {};
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": { 
+    longURL: "http://www.lighthouselabs.ca", 
+    userID: undefined,
+  },
+  "9sm5xK": { 
+    longURL: "http://www.google.com",
+    userID: undefined,
+  }
 };
 
 
@@ -54,14 +60,14 @@ app.get("/urls/:id", (req, res) => {
 
   const templateVars = {
     id: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    longURL: urlDatabase[req.params.id].longURL,
     user: users[req.cookies.userID],
   }
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id];
+  const longURL = urlDatabase[req.params.id].longURL;
   res.redirect(longURL);
 });
 
@@ -104,7 +110,11 @@ app.post("/urls", (req, res) => {
   }
   
   newSiteID = generateRandomString();
-  urlDatabase[newSiteID] = req.body.longURL;
+  urlDatabase[newSiteID] = { 
+    longURL: req.body.longURL,
+    userID: req.cookies.userID,
+   };
+
   res.redirect(`/urls/${newSiteID}`); // Redirect to new URL page
 });
 
@@ -116,7 +126,10 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.post("/urls/:id", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  urlDatabase[req.params.id] = req.body.editURL;
+  urlDatabase[req.params.id] = {
+    longURL: req.body.editURL,
+    userID: req.cookies.userID,
+  }
   res.redirect("/urls"); 
 });
 
