@@ -74,7 +74,7 @@ app.get("/urls/:id", (req, res) => {
   let requestedURL = urlDatabase[req.params.id].longURL;
 
   // Check if auth to view URL
-  if (!urlsForUser(req.cookies.userID).includes(requestedURL)){
+  if (!checkURLAuth(req.cookies.userID, requestedURL)){
     return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!")
   }
 
@@ -154,7 +154,8 @@ app.post("/urls/:id/delete", (req, res) => {
   let requestedURL = urlDatabase[req.params.id].longURL;
 
   // Check if user is auth to modify URL
-  if (!urlsForUser(req.cookies.userID).includes(requestedURL)){
+  if (!checkURLAuth(req.cookies.userID, requestedURL)){
+    console.log("Result of auth check:", checkURLAuth(req.params.id, requestedURL));
     return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!")
   }
 
@@ -180,8 +181,8 @@ app.post("/urls/:id", (req, res) => {
   let requestedURL = urlDatabase[req.params.id].longURL;
 
   // Check if user is auth to modify URL
-  if (!urlsForUser(req.cookies.userID).includes(requestedURL)){
-    return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!")
+  if (!checkURLAuth(req.cookies.userID, requestedURL)){
+    return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!");
   }
 
   urlDatabase[req.params.id] = {
@@ -262,7 +263,7 @@ function generateRandomString() {
 }
 
 /**
- * Helper fucntion for user lookup in database
+ * Helper function for user lookup in database
  * @param {*} email 
  * @returns a user object corresponding to email, null otherwise
  * 
@@ -279,14 +280,38 @@ function userLookup(email){
  * Helper function for obtaining all URLs associated with a
  * given user id
  * @param {*} id 
- * @returns an array of URL strings
+ * @returns an array of URL objects
  */
 function urlsForUser(id){
-  let userURLs = [];
-  for (let urlObj of Object.values(urlDatabase)){
-    if (urlObj.userID === id){
-      userURLs.push(urlObj.longURL);
+  let userURL = [];
+  
+  for (let urlObj in urlDatabase){
+    
+    let urlToAdd;
+    
+    if (urlDatabase[urlObj].userID === id){
+      urlToAdd = {
+        id: urlObj,
+        longURL: urlDatabase[urlObj].longURL,
+      }
+      userURL.push(urlToAdd);
     }
   }
-  return userURLs;
+  return userURL;
+}
+
+function checkURLAuth(id, reqURL){
+
+  userURL = urlsForUser(id);
+
+  // Check if req URL contained in collection
+  for (let urlObj of userURL){
+    console.log(`URL Object: ${urlObj.longURL} === ${reqURL}, ${urlObj.longURL == reqURL}`);
+    console.log(urlObj.longURL.length, reqURL.length);
+    if (urlObj.longURL === reqURL){
+      console.log("I get in here");
+      return true;
+    }
+  }
+  return false;
 }
