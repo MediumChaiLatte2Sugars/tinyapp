@@ -1,5 +1,5 @@
 const express = require("express");
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
@@ -19,9 +19,16 @@ const urlDatabase = {
   }
 };
 
+app.use(cookieSession({
+  name: 'session',
+  keys: ['Secret345'],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
+
 
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -32,7 +39,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let userID = req.cookies.userID
+  let userID = req.session.user_id;
   
   // Check if user logged in
   if (!userID){
@@ -49,7 +56,7 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    user: users[req.cookies.userID],
+    user: users[req.session.user_id],
   }
 
   // Redirect if user not logged in
@@ -63,7 +70,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
 
   // Check if user logged in
-  if (!req.cookies.userID){
+  if (!req.session.user_id){
     return res.status(401).send("Invalid request! Please login to view this page!");
   }
 
@@ -75,14 +82,14 @@ app.get("/urls/:id", (req, res) => {
   let requestedURL = urlDatabase[req.params.id].longURL;
 
   // Check if auth to view URL
-  if (!checkURLAuth(req.cookies.userID, requestedURL)){
+  if (!checkURLAuth(req.session.user_id, requestedURL)){
     return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!")
   }
 
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id].longURL,
-    user: users[req.cookies.userID],
+    user: users[req.session.user_id],
   }
   res.render("urls_show", templateVars);
 });
@@ -99,7 +106,7 @@ app.get("/hello", (req, res) => {
 app.get("/register", (req, res) => {
   // TODO: Add check for current user
   const templateVars = {
-    user: users[req.cookies.userID],
+    user: users[req.session.user_id],
   }
 
   // Redirect logged in users /urls page
@@ -111,7 +118,7 @@ app.get("/register", (req, res) => {
 
 app.get("/login", (req, res) => {
   const templateVars = {
-    user: users[req.cookies.userID],
+    user: users[req.session.user_id],
   }
 
   // Redirect logged in users /urls page
@@ -126,14 +133,14 @@ app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
 
   // Check if user currenlty logged in
-  if (!users[req.cookies.userID]){
+  if (!users[req.session.user_id]){
     return res.status(401).send("Invalid request! Please login to view this page!");
   }
   
   newSiteID = generateRandomString();
   urlDatabase[newSiteID] = { 
     longURL: req.body.longURL,
-    userID: req.cookies.userID,
+    userID: req.session.user_id,
    };
 
   res.redirect(`/urls/${newSiteID}`); // Redirect to new URL page
@@ -148,14 +155,14 @@ app.post("/urls/:id/delete", (req, res) => {
   }
 
   // Check if user signed in
-  if (!req.cookies.userID){
+  if (!req.session.user_id){
     res.status(403).send("Invalid Request! Please sign in to view this page!");
   }
 
   let requestedURL = urlDatabase[req.params.id].longURL;
 
   // Check if user is auth to modify URL
-  if (!checkURLAuth(req.cookies.userID, requestedURL)){
+  if (!checkURLAuth(req.session.user_id, requestedURL)){
     console.log("Result of auth check:", checkURLAuth(req.params.id, requestedURL));
     return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!")
   }
@@ -175,20 +182,20 @@ app.post("/urls/:id", (req, res) => {
   }
 
   // Check if user signed in
-  if (!req.cookies.userID){
+  if (!req.session.user_id){
     res.status(403).send("Invalid Request! Please sign in to view this page!");
   }
 
   let requestedURL = urlDatabase[req.params.id].longURL;
 
   // Check if user is auth to modify URL
-  if (!checkURLAuth(req.cookies.userID, requestedURL)){
+  if (!checkURLAuth(req.session.user_id, requestedURL)){
     return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!");
   }
 
   urlDatabase[req.params.id] = {
     longURL: req.body.editURL,
-    userID: req.cookies.userID,
+    userID: req.session.user_id,
   }
   res.redirect("/urls"); 
 });
@@ -209,13 +216,13 @@ app.post("/login", (req, res) => {
     return res.status(403).send("Incorrect password!");
   }
 
-  res.cookie("userID", user.id);
+  req.session.user_id = user.id;
   res.redirect("/urls"); 
 });
 
 app.post("/logout", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  res.clearCookie("userID");
+  req.session = null;
   res.redirect("/login"); 
 });
 
@@ -237,7 +244,7 @@ app.post("/register", (req, res) => {
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 10),
   }
-  res.cookie("userID", userID);
+  req.session.user_id = userID;
   console.log("Current user database:", users);
   res.redirect("/urls");
 });
