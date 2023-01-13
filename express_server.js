@@ -155,6 +155,13 @@ app.post("/urls/:id", (req, res) => {
     res.status(403).send("Invalid Request! Please sign in to view this page!");
   }
 
+  let requestedURL = urlDatabase[req.params.id].longURL;
+
+  // Check if user is auth to modify URL
+  if (!urlsForUser(req.cookies.userID).includes(requestedURL)){
+    return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!")
+  }
+
   urlDatabase[req.params.id] = {
     longURL: req.body.editURL,
     userID: req.cookies.userID,
