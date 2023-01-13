@@ -140,6 +140,12 @@ app.post("/urls/:id/delete", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   delete urlDatabase[req.params.id];
   res.redirect("/urls"); // Redirect to new URL page
+
+  // Check if id exists
+  if (!urlDatabase[req.params.id]){
+    res.status(404).send("Error: No such link exists!");
+  }
+  
 });
 
 app.post("/urls/:id", (req, res) => {
