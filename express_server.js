@@ -145,7 +145,12 @@ app.post("/urls/:id/delete", (req, res) => {
   if (!urlDatabase[req.params.id]){
     res.status(404).send("Error: No such link exists!");
   }
-  
+
+  // Check if user signed in
+  if (!req.cookies.userID){
+    res.status(403).send("Invalid Request! Please sign in to view this page!");
+  }
+
 });
 
 app.post("/urls/:id", (req, res) => {
