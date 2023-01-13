@@ -204,7 +204,7 @@ app.post("/login", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   const { email, password } = req.body;
   
-  let user = userLookup(email);
+  let user = userLookup(email, users);
 
   // Check if current user exists in database
   if (!user){
@@ -212,7 +212,7 @@ app.post("/login", (req, res) => {
   }
 
   // Check if password is correct
-  if (!bcrypt.compareSync(password, userLookup(email).password)){
+  if (!bcrypt.compareSync(password, userLookup(email, users).password)){
     return res.status(403).send("Incorrect password!");
   }
 
@@ -235,7 +235,7 @@ app.post("/register", (req, res) => {
   }
 
   // Check if email already exists in database
-  if (userLookup(req.body.email)){
+  if (userLookup(req.body.email, users)){
     res.status(400).send("Invalid Request! User exists!");
   }
 
@@ -276,10 +276,10 @@ function generateRandomString() {
  * @returns a user object corresponding to email, null otherwise
  * 
  */
-function userLookup(email){
-  for (let user in users){ 
-    if (email === users[user].email){
-      return users[user];
+function userLookup(email, database){
+  for (let user in database){ 
+    if (email === database[user].email){
+      return database[user];
     }
   }
 }
