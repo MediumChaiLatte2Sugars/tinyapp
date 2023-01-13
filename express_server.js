@@ -308,16 +308,20 @@ function urlsForUser(id){
   return userURL;
 }
 
+/**
+ * Helper function for checking if a user (by id) has access to a given URL
+ * @param {*} id 
+ * @param {*} reqURL 
+ * @returns true if the user is authorized, false otherwise
+ */
 function checkURLAuth(id, reqURL){
 
   userURL = urlsForUser(id);
 
   // Check if req URL contained in collection
   for (let urlObj of userURL){
-    console.log(`URL Object: ${urlObj.longURL} === ${reqURL}, ${urlObj.longURL == reqURL}`);
-    console.log(urlObj.longURL.length, reqURL.length);
+   
     if (urlObj.longURL === reqURL){
-      console.log("I get in here");
       return true;
     }
   }
