@@ -31,14 +31,16 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = {
-    urls: urlDatabase,
-    user: users[req.cookies.userID],
+  let userID = req.cookies.userID
+  
+  // Check if user logged in
+  if (!userID){
+    return res.status(401).send("Invalid request! Please login to view this page!");
   }
 
-  // Check if user logged in
-  if (!templateVars.user){
-    return res.status(401).send("Invalid request! Please login to view this page!");
+  const templateVars = {
+    urls: urlsForUser(userID),
+    user: users[userID],
   }
 
   res.render("urls_index", templateVars);
