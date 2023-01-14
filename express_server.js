@@ -1,11 +1,23 @@
 const express = require("express");
 const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
+const { userLookup, checkURLAuth, urlsForUser, generateRandomString } = require("./helpers");
+
+/**
+ * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+ * ■■■■ Express initial setup
+ * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+ */
+
 const app = express();
 const PORT = 8080; // default port 8080
-const { userLookup } = require("./helpers");
-
 app.set("view engine", "ejs");
+
+/**
+ * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+ * ■■■■ Databases
+ * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+ */
 
 const users = {};
 
@@ -20,6 +32,12 @@ const urlDatabase = {
   }
 };
 
+/**
+ * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+ * ■■■■ Middlewares
+ * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+ */
+
 app.use(cookieSession({
   name: 'session',
   keys: ['Secret345'],
@@ -31,14 +49,18 @@ app.use(cookieSession({
 
 app.use(express.urlencoded({ extended: true }));
 
+/**
+ * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+ * ■■■■ GET
+ * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+ */
+
+// GET /
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
+// GET /urls
 app.get("/urls", (req, res) => {
   let userID = req.session.user_id;
   
@@ -48,13 +70,14 @@ app.get("/urls", (req, res) => {
   }
 
   const templateVars = {
-    urls: urlsForUser(userID),
+    urls: urlsForUser(userID, urlDatabase),
     user: users[userID],
   }
 
   res.render("urls_index", templateVars);
 });
 
+// GET /urls/new
 app.get("/urls/new", (req, res) => {
   const templateVars = {
     user: users[req.session.user_id],
@@ -68,6 +91,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
+// GET /urls/:id
 app.get("/urls/:id", (req, res) => {
 
   // Check if user logged in
@@ -83,7 +107,7 @@ app.get("/urls/:id", (req, res) => {
   let requestedURL = urlDatabase[req.params.id].longURL;
 
   // Check if auth to view URL
-  if (!checkURLAuth(req.session.user_id, requestedURL)){
+  if (!checkURLAuth(requestedURL, urlsForUser(req.session.user_id, urlDatabase))){
     return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!")
   }
 
@@ -95,17 +119,20 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// GET /u/:id
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id].longURL;
   res.redirect(longURL);
 });
 
+// GET /hello
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+// GET /register
 app.get("/register", (req, res) => {
-  // TODO: Add check for current user
+
   const templateVars = {
     user: users[req.session.user_id],
   }
@@ -117,6 +144,7 @@ app.get("/register", (req, res) => {
   res.render("account_registration", templateVars);
 });
 
+// GET /login
 app.get("/login", (req, res) => {
   const templateVars = {
     user: users[req.session.user_id],
@@ -130,6 +158,13 @@ app.get("/login", (req, res) => {
   res.render("account_login", templateVars);
 });
 
+/**
+ * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+ * ■■■■ POST
+ * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+ */
+
+// POST /urls
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
 
@@ -147,6 +182,7 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${newSiteID}`); // Redirect to new URL page
 });
 
+// POST /urls/:id/delete
 app.post("/urls/:id/delete", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
 
@@ -163,8 +199,8 @@ app.post("/urls/:id/delete", (req, res) => {
   let requestedURL = urlDatabase[req.params.id].longURL;
 
   // Check if user is auth to modify URL
-  if (!checkURLAuth(req.session.user_id, requestedURL)){
-    console.log("Result of auth check:", checkURLAuth(req.params.id, requestedURL));
+  if (!checkURLAuth(requestedURL, urlsForUser(req.session.user_id, urlDatabase))){
+    
     return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!")
   }
 
@@ -174,6 +210,7 @@ app.post("/urls/:id/delete", (req, res) => {
 
 });
 
+// POST /urls/:id
 app.post("/urls/:id", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
 
@@ -190,7 +227,7 @@ app.post("/urls/:id", (req, res) => {
   let requestedURL = urlDatabase[req.params.id].longURL;
 
   // Check if user is auth to modify URL
-  if (!checkURLAuth(req.session.user_id, requestedURL)){
+  if (!checkURLAuth(requestedURL, urlsForUser(req.session.user_id, urlDatabase))){
     return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!");
   }
 
@@ -201,6 +238,7 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls"); 
 });
 
+// POST /login
 app.post("/login", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   const { email, password } = req.body;
@@ -221,12 +259,14 @@ app.post("/login", (req, res) => {
   res.redirect("/urls"); 
 });
 
+// POST /logout
 app.post("/logout", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   req.session = null;
   res.redirect("/login"); 
 });
 
+// POST /register
 app.post("/register", (req, res) => {
   const userID = `user-${generateRandomString()}`;
 
@@ -250,67 +290,12 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 });
 
+/**
+ * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+ * ■■■■ Listener
+ * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+ */
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-/**
- * Generates and returns a string of 6 random alphanumeric characters
- */
-function generateRandomString() {
-  const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const STRING_LENGTH = 6;
-
-  let result = '';
-  const charactersLength = characters.length;
-  
-  for ( let i = 0; i < STRING_LENGTH; i++ ) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-
-  return result;
-}
-
-/**
- * Helper function for obtaining all URLs associated with a
- * given user id
- * @param {*} id 
- * @returns an array of URL objects
- */
-function urlsForUser(id){
-  let userURL = [];
-  
-  for (let urlObj in urlDatabase){
-    
-    let urlToAdd;
-    
-    if (urlDatabase[urlObj].userID === id){
-      urlToAdd = {
-        id: urlObj,
-        longURL: urlDatabase[urlObj].longURL,
-      }
-      userURL.push(urlToAdd);
-    }
-  }
-  return userURL;
-}
-
-/**
- * Helper function for checking if a user (by id) has access to a given URL
- * @param {*} id 
- * @param {*} reqURL 
- * @returns true if the user is authorized, false otherwise
- */
-function checkURLAuth(id, reqURL){
-
-  userURL = urlsForUser(id);
-
-  // Check if req URL contained in collection
-  for (let urlObj of userURL){
-   
-    if (urlObj.longURL === reqURL){
-      return true;
-    }
-  }
-  return false;
-}
