@@ -1,4 +1,4 @@
-const { assert } = require('chai');
+const { assert, expect } = require('chai');
 
 const { userLookup } = require('../helpers.js');
 
@@ -24,8 +24,7 @@ describe('userLookup', function() {
   });
 
   it('should return undefined with an invalid email', function() {
-    const expect = require('chai').expect
-      , user = userLookup("doesNOTexist@example.com", testUsers);
+    const user = userLookup("doesNOTexist@example.com", testUsers);
     expect(user).to.be.undefined;
   });
 
