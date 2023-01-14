@@ -1,6 +1,6 @@
 const { assert, expect } = require('chai');
 
-const { userLookup } = require('../helpers.js');
+const { userLookup, urlsForUser, checkURLAuth } = require('../helpers.js');
 
 const testUsers = {
   "userRandomID": {
@@ -12,6 +12,17 @@ const testUsers = {
     id: "user2RandomID", 
     email: "user2@example.com", 
     password: "dishwasher-funk"
+  }
+};
+
+const testDatabase = {
+  "b2xVn2": { 
+    longURL: "http://google.ca", 
+    userID: "user2RandomID",
+  },
+  "9sm5xK": { 
+    longURL: "http://www.example.com",
+    userID: "user2RandomID",
   }
 };
 
@@ -29,3 +40,20 @@ describe('userLookup', function() {
   });
 
 });
+
+// describe('urlsForUser', function(){
+//   it('should return an array of URL objects belonging to the user', function(){
+//     const should = require('chai').should()
+//       , userURLS = urlsForUser("user2RandomID", testDatabase);
+//       userURLS.should.be.instanceOf(Array).and.have.keys([
+//         { 
+//           id: "b2xVn2",
+//           longURL: "http://google.ca" 
+//         },
+//         { 
+//           id: "b2xVn2",
+//           longURL: "http://google.ca"
+//          }]);
+//   });
+
+// });

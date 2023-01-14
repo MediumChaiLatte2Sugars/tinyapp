@@ -78,6 +78,7 @@ app.get("/urls", (req, res) => {
   const templateVars = {
     urls: urlsForUser(userID, urlDatabase),
     user: users[userID],
+    currentPage: "/urls",
   }
 
   res.render("urls_index", templateVars);
@@ -87,6 +88,7 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const templateVars = {
     user: users[req.session.user_id],
+    currentPage: "/urls/new",
   }
 
   // Redirect if user not logged in
@@ -121,6 +123,7 @@ app.get("/urls/:id", (req, res) => {
     id: req.params.id,
     longURL: urlDatabase[req.params.id].longURL,
     user: users[req.session.user_id],
+    currentPage: "/urls/:id",
   }
   res.render("urls_show", templateVars);
 });
@@ -141,6 +144,7 @@ app.get("/register", (req, res) => {
 
   const templateVars = {
     user: users[req.session.user_id],
+    currentPage: "/register",
   }
 
   // Redirect logged in users /urls page
@@ -154,6 +158,7 @@ app.get("/register", (req, res) => {
 app.get("/login", (req, res) => {
   const templateVars = {
     user: users[req.session.user_id],
+    currentPage: "/login",
   }
 
   // Redirect logged in users /urls page
