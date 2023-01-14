@@ -57,7 +57,13 @@ app.use(express.urlencoded({ extended: true }));
 
 // GET /
 app.get("/", (req, res) => {
-  res.send("Hello!");
+
+  // Show login page if not logged in
+  if (!req.session.user_id){
+    res.redirect("/login");
+  }
+  
+  return res.redirect("/urls");
 });
 
 // GET /urls
