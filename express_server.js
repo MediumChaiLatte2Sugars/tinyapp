@@ -3,6 +3,7 @@ const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
+const { userLookup } = require("./helpers");
 
 app.set("view engine", "ejs");
 
@@ -268,20 +269,6 @@ function generateRandomString() {
   }
 
   return result;
-}
-
-/**
- * Helper function for user lookup in database
- * @param {*} email 
- * @returns a user object corresponding to email, null otherwise
- * 
- */
-function userLookup(email, database){
-  for (let user in database){ 
-    if (email === database[user].email){
-      return database[user];
-    }
-  }
 }
 
 /**
