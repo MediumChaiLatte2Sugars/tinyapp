@@ -130,7 +130,14 @@ app.get("/urls/:id", (req, res) => {
 
 // GET /u/:id
 app.get("/u/:id", (req, res) => {
+
+  // Check if URL exists
+  if (!urlDatabase[req.params.id]){
+    res.status(404).send("No such short URL exists!");
+  }
+  
   const longURL = urlDatabase[req.params.id].longURL;
+
   res.redirect(longURL);
 });
 
