@@ -22,4 +22,11 @@ describe('userLookup', function() {
       , expectedUserID = "userRandomID";
     user.should.be.a('object').and.have.a.property('id').with.a.valueOf(expectedUserID);
   });
+
+  it('should return undefined with an invalid email', function() {
+    const expect = require('chai').expect
+      , user = userLookup("doesNOTexist@example.com", testUsers);
+    expect(user).to.be.undefined;
+  });
+
 });
