@@ -34,7 +34,7 @@ In a browser of your choice, in the address bar, navigate to:
 localhost:8080/
 ```
 You will be met with a login page:
-!["login-page"](/assets/images/TinyApp-login.png))
+!["login-page"](/assets/images/TinyApp-login.png)
 
 Click on the register button, which will bring you to the following registration page:
 !["registration-page"](/assets/images/TinyApp-register.png)
