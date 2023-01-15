@@ -2,6 +2,8 @@
 
 A simple link shortening Node web app a la TinyURL and bit.ly.
 
+## Dependencies
+
 In order to successfully run the web app, please ensure that you have installed the required dependencies outlined in the package.json file, namely:
 
 - [bcryptjs - 2.4.3](https://www.npmjs.com/package/bcryptjs)
@@ -18,6 +20,8 @@ Optional:
 - [nodemon - 2.0.20](https://www.npmjs.com/package/nodemon)
   - useful if you wish to tinker with/alter the source files
 
+
+## Getting Started
 
 Start by installing this repo locally by [forking](https://docs.github.com/en/get-started/quickstart/fork-a-repo) and [cloning](https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository) this repo onto your machine. 
 
