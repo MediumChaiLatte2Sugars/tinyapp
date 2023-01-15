@@ -21,12 +21,16 @@ app.set("view engine", "ejs");
 
 const users = {};
 
+/**
+ * Database contents left intact for illustrative purposes
+ * of the structure
+ */
 const urlDatabase = {
-  "b2xVn2": { 
-    longURL: "http://www.lighthouselabs.ca", 
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
     userID: undefined,
   },
-  "9sm5xK": { 
+  "9sm5xK": {
     longURL: "http://www.google.com",
     userID: undefined,
   }
@@ -44,7 +48,7 @@ app.use(cookieSession({
 
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
-}))
+}));
 
 
 app.use(express.urlencoded({ extended: true }));
@@ -59,19 +63,19 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
 
   // Show login page if not logged in
-  if (!req.session.user_id){
+  if (!req.session.user_id) {
     res.redirect("/login");
   }
-  
+
   return res.redirect("/urls");
 });
 
 // GET /urls
 app.get("/urls", (req, res) => {
   let userID = req.session.user_id;
-  
+
   // Check if user logged in
-  if (!userID){
+  if (!userID) {
     return res.status(401).send("Invalid request! Please login to view this page!");
   }
 
@@ -79,7 +83,7 @@ app.get("/urls", (req, res) => {
     urls: urlsForUser(userID, urlDatabase),
     user: users[userID],
     currentPage: "/urls",
-  }
+  };
 
   res.render("urls_index", templateVars);
 });
@@ -89,10 +93,10 @@ app.get("/urls/new", (req, res) => {
   const templateVars = {
     user: users[req.session.user_id],
     currentPage: "/urls/new",
-  }
+  };
 
   // Redirect if user not logged in
-  if (!templateVars.user){
+  if (!templateVars.user) {
     return res.redirect("/login");
   }
 
@@ -103,20 +107,20 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
 
   // Check if user logged in
-  if (!req.session.user_id){
+  if (!req.session.user_id) {
     return res.status(401).send("Invalid request! Please login to view this page!");
   }
 
   // Check if URL in database already
-  if (!urlDatabase[req.params.id]){
+  if (!urlDatabase[req.params.id]) {
     return res.status(404).send("Requested URL Not Found!");
   }
 
   let requestedURL = urlDatabase[req.params.id].longURL;
 
   // Check if auth to view URL
-  if (!checkURLAuth(requestedURL, urlsForUser(req.session.user_id, urlDatabase))){
-    return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!")
+  if (!checkURLAuth(requestedURL, urlsForUser(req.session.user_id, urlDatabase))) {
+    return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!");
   }
 
   const templateVars = {
@@ -124,7 +128,7 @@ app.get("/urls/:id", (req, res) => {
     longURL: urlDatabase[req.params.id].longURL,
     user: users[req.session.user_id],
     currentPage: "/urls/:id",
-  }
+  };
   res.render("urls_show", templateVars);
 });
 
@@ -132,18 +136,13 @@ app.get("/urls/:id", (req, res) => {
 app.get("/u/:id", (req, res) => {
 
   // Check if URL exists
-  if (!urlDatabase[req.params.id]){
+  if (!urlDatabase[req.params.id]) {
     res.status(404).send("No such short URL exists!");
   }
-  
+
   const longURL = urlDatabase[req.params.id].longURL;
 
   res.redirect(longURL);
-});
-
-// GET /hello
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 // GET /register
@@ -152,10 +151,10 @@ app.get("/register", (req, res) => {
   const templateVars = {
     user: users[req.session.user_id],
     currentPage: "/register",
-  }
+  };
 
   // Redirect logged in users /urls page
-  if (templateVars.user){
+  if (templateVars.user) {
     return res.redirect("/urls");
   }
   res.render("account_registration", templateVars);
@@ -166,10 +165,10 @@ app.get("/login", (req, res) => {
   const templateVars = {
     user: users[req.session.user_id],
     currentPage: "/login",
-  }
+  };
 
   // Redirect logged in users /urls page
-  if (templateVars.user){
+  if (templateVars.user) {
     return res.redirect("/urls");
   }
 
@@ -184,42 +183,40 @@ app.get("/login", (req, res) => {
 
 // POST /urls
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
 
   // Check if user currenlty logged in
-  if (!users[req.session.user_id]){
+  if (!users[req.session.user_id]) {
     return res.status(401).send("Invalid request! Please login to view this page!");
   }
-  
+
   newSiteID = generateRandomString();
-  urlDatabase[newSiteID] = { 
+  urlDatabase[newSiteID] = {
     longURL: req.body.longURL,
     userID: req.session.user_id,
-   };
+  };
 
   res.redirect(`/urls/${newSiteID}`); // Redirect to new URL page
 });
 
 // POST /urls/:id/delete
 app.post("/urls/:id/delete", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
 
   // Check if id exists
-  if (!urlDatabase[req.params.id]){
+  if (!urlDatabase[req.params.id]) {
     res.status(404).send("Error: No such link exists!");
   }
 
   // Check if user signed in
-  if (!req.session.user_id){
+  if (!req.session.user_id) {
     res.status(403).send("Invalid Request! Please sign in to view this page!");
   }
 
   let requestedURL = urlDatabase[req.params.id].longURL;
 
   // Check if user is auth to modify URL
-  if (!checkURLAuth(requestedURL, urlsForUser(req.session.user_id, urlDatabase))){
-    
-    return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!")
+  if (!checkURLAuth(requestedURL, urlsForUser(req.session.user_id, urlDatabase))) {
+
+    return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!");
   }
 
   delete urlDatabase[req.params.id];
@@ -230,58 +227,55 @@ app.post("/urls/:id/delete", (req, res) => {
 
 // POST /urls/:id
 app.post("/urls/:id", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
 
   // Check if id exists
-  if (!urlDatabase[req.params.id]){
+  if (!urlDatabase[req.params.id]) {
     res.status(404).send("Error: No such link exists!");
   }
 
   // Check if user signed in
-  if (!req.session.user_id){
+  if (!req.session.user_id) {
     res.status(403).send("Invalid Request! Please sign in to view this page!");
   }
 
   let requestedURL = urlDatabase[req.params.id].longURL;
 
   // Check if user is auth to modify URL
-  if (!checkURLAuth(requestedURL, urlsForUser(req.session.user_id, urlDatabase))){
+  if (!checkURLAuth(requestedURL, urlsForUser(req.session.user_id, urlDatabase))) {
     return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!");
   }
 
   urlDatabase[req.params.id] = {
     longURL: req.body.editURL,
     userID: req.session.user_id,
-  }
-  res.redirect("/urls"); 
+  };
+  res.redirect("/urls");
 });
 
 // POST /login
 app.post("/login", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
   const { email, password } = req.body;
-  
+
   let user = userLookup(email, users);
 
   // Check if current user exists in database
-  if (!user){
+  if (!user) {
     return res.status(403).send("No account is registered with that email!");
   }
 
   // Check if password is correct
-  if (!bcrypt.compareSync(password, userLookup(email, users).password)){
+  if (!bcrypt.compareSync(password, userLookup(email, users).password)) {
     return res.status(403).send("Incorrect password!");
   }
 
   req.session.user_id = user.id;
-  res.redirect("/urls"); 
+  res.redirect("/urls");
 });
 
 // POST /logout
 app.post("/logout", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
   req.session = null;
-  res.redirect("/login"); 
+  res.redirect("/login");
 });
 
 // POST /register
@@ -289,12 +283,12 @@ app.post("/register", (req, res) => {
   const userID = `user-${generateRandomString()}`;
 
   // Check if email and password are defined
-  if (req.body.email === "" || req.body.password === ""){
+  if (req.body.email === "" || req.body.password === "") {
     res.status(400).send("Invalid Request!");
   }
 
   // Check if email already exists in database
-  if (userLookup(req.body.email, users)){
+  if (userLookup(req.body.email, users)) {
     res.status(400).send("Invalid Request! User exists!");
   }
 
@@ -302,9 +296,10 @@ app.post("/register", (req, res) => {
     id: userID,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 10),
-  }
+  };
+
   req.session.user_id = userID;
-  console.log("Current user database:", users);
+  
   res.redirect("/urls");
 });
 
