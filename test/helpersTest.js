@@ -41,19 +41,51 @@ describe('userLookup', function() {
 
 });
 
-// describe('urlsForUser', function(){
-//   it('should return an array of URL objects belonging to the user', function(){
-//     const should = require('chai').should()
-//       , userURLS = urlsForUser("user2RandomID", testDatabase);
-//       userURLS.should.be.instanceOf(Array).and.have.keys([
-//         { 
-//           id: "b2xVn2",
-//           longURL: "http://google.ca" 
-//         },
-//         { 
-//           id: "b2xVn2",
-//           longURL: "http://google.ca"
-//          }]);
-//   });
+describe('urlsForUser', function(){
+  it('should return an array of URL objects belonging to the user', function(){
+    const userURLS = urlsForUser("user2RandomID", testDatabase);
+      expect(userURLS).to.be.an.instanceOf(Array).and.to.deep.equal([
+        { 
+          id: "b2xVn2",
+          longURL: "http://google.ca" 
+        },
+        { 
+          id: "9sm5xK",
+          longURL: "http://www.example.com"
+         }]);
+  });
 
-// });
+  it('should return an empty array if the user does not own any URLs', function(){
+    const should = require('chai').should()
+      , userURLS = urlsForUser("userRandomID", testDatabase);
+      userURLS.should.be.instanceOf(Array).and.to.be.empty;
+  });
+
+  it('should return an empty array if the databse is empty', function(){
+    const should = require('chai').should()
+      , emptyDatabase = {}
+      , userURLS = urlsForUser("userRandomID", emptyDatabase);
+      userURLS.should.be.instanceOf(Array).and.to.be.empty;
+  });
+
+});
+
+describe('checkURLAuth', function(){
+  it('should return false if the user does not have access to a given URL', function(){
+    const userURLS = [{ id: "x3Alo5", longURL: "http://example2.com"}];
+    const result = checkURLAuth("http://example.com", userURLS);
+      expect(result).to.be.false;
+  });
+
+  it('should return false if the user has no URLs', function(){
+    const userURLS = [];
+    const result = checkURLAuth("http://example2.com", userURLS);
+      expect(result).to.be.false;
+  });
+
+  it('should return true if the user has access to a URL', function(){
+    const userURLS = [{id: "9sm5xK", longURL: "http://www.example.com"}];
+    const result = checkURLAuth("http://www.example.com", userURLS);
+      expect(result).to.be.true;
+  });
+});
