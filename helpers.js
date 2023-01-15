@@ -1,7 +1,7 @@
 /**
  * Helper function for user lookup in database
- * @param {*} email 
- * @param {*} database 
+ * @param {String} email 
+ * @param {Object} database 
  * @returns a user object corresponding to email, null otherwise
  */
 function userLookup(email, database){
@@ -13,9 +13,9 @@ function userLookup(email, database){
 }
 
 /**
- * Helper function for checking if a user (by id) has access to a given URL
- * @param {*} id 
- * @param {*} reqURL 
+ * Helper function for checking if a user has access to a given URL
+ * @param {String} reqURL
+ * @param {Array} userURLS 
  * @returns true if the user is authorized, false otherwise
  */
 function checkURLAuth(reqURL, userURLS){
@@ -33,7 +33,8 @@ function checkURLAuth(reqURL, userURLS){
 /**
  * Helper function for obtaining all URLs associated with a
  * given user id
- * @param {*} id 
+ * @param {String} id 
+ * @param {Object} urlDatabase
  * @returns an array of URL objects
  */
 function urlsForUser(id, urlDatabase){
