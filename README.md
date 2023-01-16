@@ -3,6 +3,7 @@
 A simple link shortening Node web app a la TinyURL and bit.ly.
 
 ## Dependencies
+***
 
 In order to successfully run the web app, please ensure that you have installed the required dependencies outlined in the package.json file, namely:
 
@@ -22,6 +23,7 @@ Optional:
 
 
 ## Getting Started
+***
 
 Start by installing this repo locally by [forking](https://docs.github.com/en/get-started/quickstart/fork-a-repo) and [cloning](https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository) this repo onto your machine. 
 
@@ -29,6 +31,14 @@ In a terminal of your choice, navigate to the installed repo on your machine and
 ```
 node express_server.js
 ```
+_or, if you installed [nodemon](https://www.npmjs.com/package/nodemon):_
+
+```
+npm start
+```
+
+>Server-side up and running at this point! Next is the client-side ↴
+
 In a browser of your choice, in the address bar, navigate to: 
 ```
 localhost:8080/
