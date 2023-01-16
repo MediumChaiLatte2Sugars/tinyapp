@@ -64,7 +64,7 @@ app.get("/", (req, res) => {
 
   // Show login page if not logged in
   if (!req.session.user_id) {
-    res.redirect("/login");
+    return res.redirect("/login");
   }
 
   return res.redirect("/urls");
@@ -137,7 +137,7 @@ app.get("/u/:id", (req, res) => {
 
   // Check if URL exists
   if (!urlDatabase[req.params.id]) {
-    res.status(404).send("No such short URL exists!");
+    return res.status(404).send("No such short URL exists!");
   }
 
   const longURL = urlDatabase[req.params.id].longURL;
@@ -203,12 +203,12 @@ app.post("/urls/:id/delete", (req, res) => {
 
   // Check if id exists
   if (!urlDatabase[req.params.id]) {
-    res.status(404).send("Error: No such link exists!");
+    return res.status(404).send("Error: No such link exists!");
   }
 
   // Check if user signed in
   if (!req.session.user_id) {
-    res.status(403).send("Invalid Request! Please sign in to view this page!");
+    return res.status(403).send("Invalid Request! Please sign in to view this page!");
   }
 
   let requestedURL = urlDatabase[req.params.id].longURL;
@@ -230,12 +230,12 @@ app.post("/urls/:id", (req, res) => {
 
   // Check if id exists
   if (!urlDatabase[req.params.id]) {
-    res.status(404).send("Error: No such link exists!");
+    return res.status(404).send("Error: No such link exists!");
   }
 
   // Check if user signed in
   if (!req.session.user_id) {
-    res.status(403).send("Invalid Request! Please sign in to view this page!");
+    return res.status(403).send("Invalid Request! Please sign in to view this page!");
   }
 
   let requestedURL = urlDatabase[req.params.id].longURL;
@@ -284,12 +284,12 @@ app.post("/register", (req, res) => {
 
   // Check if email and password are defined
   if (req.body.email === "" || req.body.password === "") {
-    res.status(400).send("Invalid Request!");
+    return res.status(400).send("Invalid Request!");
   }
 
   // Check if email already exists in database
   if (userLookup(req.body.email, users)) {
-    res.status(400).send("Invalid Request! User exists!");
+    return res.status(400).send("Invalid Request! User exists!");
   }
 
   users[userID] = {
@@ -299,7 +299,7 @@ app.post("/register", (req, res) => {
   };
 
   req.session.user_id = userID;
-  
+
   res.redirect("/urls");
 });
 
