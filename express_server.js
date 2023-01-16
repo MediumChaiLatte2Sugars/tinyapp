@@ -2,6 +2,7 @@ const express = require("express");
 const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 const { userLookup, checkURLAuth, urlsForUser, generateRandomString } = require("./helpers");
+const { urlDatabase, users } = require("./databases");
 
 /**
  * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
@@ -12,29 +13,6 @@ const { userLookup, checkURLAuth, urlsForUser, generateRandomString } = require(
 const app = express();
 const PORT = 8080; // default port 8080
 app.set("view engine", "ejs");
-
-/**
- * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
- * ■■■■ Databases
- * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
- */
-
-const users = {};
-
-/**
- * Database contents left intact for illustrative purposes
- * of the structure
- */
-const urlDatabase = {
-  "b2xVn2": {
-    longURL: "http://www.lighthouselabs.ca",
-    userID: undefined,
-  },
-  "9sm5xK": {
-    longURL: "http://www.google.com",
-    userID: undefined,
-  }
-};
 
 /**
  * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
@@ -302,7 +280,7 @@ app.post("/logout", (req, res) => {
 
 // POST /register
 app.post("/register", (req, res) => {
-  
+
   const userID = `user-${generateRandomString()}`;
 
   // Check if email and password are defined
