@@ -5,11 +5,15 @@
  * @returns a user object corresponding to email, null otherwise
  */
 function userLookup(email, database){
+
   for (let user in database){ 
+
     if (email === database[user].email){
       return database[user];
     }
+
   }
+
 }
 
 /**
@@ -26,7 +30,9 @@ function checkURLAuth(reqURL, userURLS){
     if (urlObj.longURL === reqURL){
       return true;
     }
+
   }
+
   return false;
 }
 
@@ -38,6 +44,7 @@ function checkURLAuth(reqURL, userURLS){
  * @returns an array of URL objects
  */
 function urlsForUser(id, urlDatabase){
+  
   let userURL = [];
   
   for (let urlObj in urlDatabase){
@@ -49,10 +56,15 @@ function urlsForUser(id, urlDatabase){
         id: urlObj,
         longURL: urlDatabase[urlObj].longURL,
       }
+
       userURL.push(urlToAdd);
+
     }
+
   }
+
   return userURL;
+
 }
 
 /**
@@ -60,6 +72,7 @@ function urlsForUser(id, urlDatabase){
  * @returns a string of 6 random alphanumeric characters
  */
 function generateRandomString() {
+  
   const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const STRING_LENGTH = 6;
 
@@ -71,6 +84,7 @@ function generateRandomString() {
   }
 
   return result;
+
 }
 
 module.exports = { userLookup, checkURLAuth, urlsForUser, generateRandomString };
