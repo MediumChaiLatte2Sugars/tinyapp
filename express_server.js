@@ -39,7 +39,10 @@ app.use(express.urlencoded({ extended: true }));
  * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
  */
 
-// GET /
+/**
+ * GET /
+ * Home endpoint that redirects to login if signed in or /urls
+ */
 app.get("/", (req, res) => {
 
   const userID = req.session.user_id;
@@ -53,7 +56,10 @@ app.get("/", (req, res) => {
 
 });
 
-// GET /urls
+/**
+ * GET /urls
+ * URL page endpoint that shows a user's URLs if logged in, error otherwise
+ */
 app.get("/urls", (req, res) => {
 
   const userID = req.session.user_id;
@@ -73,7 +79,10 @@ app.get("/urls", (req, res) => {
 
 });
 
-// GET /urls/new
+/**
+ * GET /urls/new
+ * URL creation endpoint that allows a logged in user to create a url
+ */
 app.get("/urls/new", (req, res) => {
 
   const userID = req.session.user_id;
@@ -92,7 +101,10 @@ app.get("/urls/new", (req, res) => {
 
 });
 
-// GET /urls/:id
+/**
+ * GET /urls/:id
+ * URL page endpoint that shows a particular URL's page by it's id
+ */
 app.get("/urls/:id", (req, res) => {
 
   const userID = req.session.user_id;
@@ -126,7 +138,10 @@ app.get("/urls/:id", (req, res) => {
 
 });
 
-// GET /u/:id
+/**
+ * GET /u/:id
+ * URL endpoint that redirects to the stored longURL assigned to short url id
+ */
 app.get("/u/:id", (req, res) => {
 
   const urlID = req.params.id;
@@ -142,7 +157,10 @@ app.get("/u/:id", (req, res) => {
 
 });
 
-// GET /register
+/**
+ * GET /register
+ * Registration endpoint that presents a registration form for a prospective user to submit
+ */
 app.get("/register", (req, res) => {
 
   const userID = req.session.user_id;
@@ -161,7 +179,10 @@ app.get("/register", (req, res) => {
 
 });
 
-// GET /login
+/**
+ * GET /login
+ * Login endpoint that presents a prospective user with the login form
+ */
 app.get("/login", (req, res) => {
 
   const userID = req.session.user_id;
@@ -186,7 +207,10 @@ app.get("/login", (req, res) => {
  * ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
  */
 
-// POST /urls
+/**
+ * POST /urls
+ * Created URL storage endpoint that saves data from the URL creation form to the databse
+ */
 app.post("/urls", (req, res) => {
 
   const userID = req.session.user_id;
@@ -208,7 +232,10 @@ app.post("/urls", (req, res) => {
 
 });
 
-// POST /urls/:id/delete
+/**
+ * POST ./urls/:id/delete
+ * URL deletion endpoint that removes a specified URL from the database
+ */
 app.post("/urls/:id/delete", (req, res) => {
 
   const urlID = req.params.id;
@@ -236,7 +263,10 @@ app.post("/urls/:id/delete", (req, res) => {
 
 });
 
-// POST /urls/:id
+/**
+ * POST /urls/:id
+ * URL updating endpoint that changes data pertaining to a particular stored URL
+ */
 app.post("/urls/:id", (req, res) => {
 
   const userID = req.session.user_id;
@@ -269,7 +299,10 @@ app.post("/urls/:id", (req, res) => {
 
 });
 
-// POST /login
+/**
+ * POST /login
+ * Login endpoint that signs in a user with the specified username and password
+ */
 app.post("/login", (req, res) => {
 
   const { email, password } = req.body;
@@ -292,7 +325,10 @@ app.post("/login", (req, res) => {
 
 });
 
-// POST /logout
+/**
+ * POST /logout
+ * Logout endpoint which removes the user from the current web app session
+ */
 app.post("/logout", (req, res) => {
 
   req.session = null;
@@ -301,7 +337,10 @@ app.post("/logout", (req, res) => {
 
 });
 
-// POST /register
+/**
+ * POST /register
+ * Registration end point that registers a user with a specified email and password
+ */
 app.post("/register", (req, res) => {
 
   const userID = `user-${generateRandomString()}`;
