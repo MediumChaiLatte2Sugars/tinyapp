@@ -42,8 +42,10 @@ app.use(express.urlencoded({ extended: true }));
 // GET /
 app.get("/", (req, res) => {
 
+  const userID = req.session.user_id;
+
   // Show login page if not logged in
-  if (!req.session.user_id) {
+  if (!userID) {
     return res.redirect("/login");
   }
 
@@ -54,7 +56,7 @@ app.get("/", (req, res) => {
 // GET /urls
 app.get("/urls", (req, res) => {
 
-  let userID = req.session.user_id;
+  const userID = req.session.user_id;
 
   // Check if user logged in
   if (!userID) {
@@ -74,8 +76,10 @@ app.get("/urls", (req, res) => {
 // GET /urls/new
 app.get("/urls/new", (req, res) => {
 
+  const userID = req.session.user_id;
+
   const templateVars = {
-    user: users[req.session.user_id],
+    user: users[userID],
     currentPage: "/urls/new",
   };
 
@@ -91,27 +95,30 @@ app.get("/urls/new", (req, res) => {
 // GET /urls/:id
 app.get("/urls/:id", (req, res) => {
 
+  const userID = req.session.user_id;
+  const urlID = req.params.id;
+
   // Check if user logged in
-  if (!req.session.user_id) {
+  if (!userID) {
     return res.status(401).send("Invalid request! Please login to view this page!");
   }
 
   // Check if URL in database already
-  if (!urlDatabase[req.params.id]) {
+  if (!urlDatabase[urlID]) {
     return res.status(404).send("Requested URL Not Found!");
   }
 
   let requestedURL = urlDatabase[req.params.id].longURL;
 
   // Check if auth to view URL
-  if (!checkURLAuth(requestedURL, urlsForUser(req.session.user_id, urlDatabase))) {
+  if (!checkURLAuth(requestedURL, urlsForUser(userID, urlDatabase))) {
     return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!");
   }
 
   const templateVars = {
     id: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL,
-    user: users[req.session.user_id],
+    longURL: urlDatabase[urlID].longURL,
+    user: users[userID],
     currentPage: "/urls/:id",
   };
 
@@ -122,12 +129,14 @@ app.get("/urls/:id", (req, res) => {
 // GET /u/:id
 app.get("/u/:id", (req, res) => {
 
+  const urlID = req.params.id;
+
   // Check if URL exists
-  if (!urlDatabase[req.params.id]) {
+  if (!urlDatabase[urlID]) {
     return res.status(404).send("No such short URL exists!");
   }
 
-  const longURL = urlDatabase[req.params.id].longURL;
+  const longURL = urlDatabase[urlID].longURL;
 
   res.redirect(longURL);
 
@@ -136,8 +145,10 @@ app.get("/u/:id", (req, res) => {
 // GET /register
 app.get("/register", (req, res) => {
 
+  const userID = req.session.user_id;
+  
   const templateVars = {
-    user: users[req.session.user_id],
+    user: users[userID],
     currentPage: "/register",
   };
 
@@ -153,8 +164,10 @@ app.get("/register", (req, res) => {
 // GET /login
 app.get("/login", (req, res) => {
 
+  const userID = req.session.user_id;
+
   const templateVars = {
-    user: users[req.session.user_id],
+    user: users[userID],
     currentPage: "/login",
   };
 
@@ -176,16 +189,19 @@ app.get("/login", (req, res) => {
 // POST /urls
 app.post("/urls", (req, res) => {
 
+  const userID = req.session.user_id;
+  const longURL = req.body.longURL;
+
   // Check if user currenlty logged in
-  if (!users[req.session.user_id]) {
+  if (!users[userID]) {
     return res.status(401).send("Invalid request! Please login to view this page!");
   }
 
   newSiteID = generateRandomString();
 
   urlDatabase[newSiteID] = {
-    longURL: req.body.longURL,
-    userID: req.session.user_id,
+    longURL: longURL,
+    userID: userID,
   };
 
   res.redirect(`/urls/${newSiteID}`); // Redirect to new URL page
@@ -195,24 +211,27 @@ app.post("/urls", (req, res) => {
 // POST /urls/:id/delete
 app.post("/urls/:id/delete", (req, res) => {
 
+  const urlID = req.params.id;
+  const userID = req.session.user_id;
+
   // Check if id exists
-  if (!urlDatabase[req.params.id]) {
+  if (!urlDatabase[urlID]) {
     return res.status(404).send("Error: No such link exists!");
   }
 
   // Check if user signed in
-  if (!req.session.user_id) {
+  if (!userID) {
     return res.status(403).send("Invalid Request! Please sign in to view this page!");
   }
 
-  let requestedURL = urlDatabase[req.params.id].longURL;
+  let requestedURL = urlDatabase[urlID].longURL;
 
   // Check if user is auth to modify URL
-  if (!checkURLAuth(requestedURL, urlsForUser(req.session.user_id, urlDatabase))) {
+  if (!checkURLAuth(requestedURL, urlsForUser(userID, urlDatabase))) {
     return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!");
   }
 
-  delete urlDatabase[req.params.id];
+  delete urlDatabase[urlID];
   res.redirect("/urls"); // Redirect to new URL page
 
 });
@@ -220,26 +239,30 @@ app.post("/urls/:id/delete", (req, res) => {
 // POST /urls/:id
 app.post("/urls/:id", (req, res) => {
 
+  const userID = req.session.user_id;
+  const urlID = req.params.id;
+  const editURL = req.body.editURL;
+
   // Check if id exists
-  if (!urlDatabase[req.params.id]) {
+  if (!urlDatabase[urlID]) {
     return res.status(404).send("Error: No such link exists!");
   }
 
   // Check if user signed in
-  if (!req.session.user_id) {
+  if (!userID) {
     return res.status(403).send("Invalid Request! Please sign in to view this page!");
   }
 
-  let requestedURL = urlDatabase[req.params.id].longURL;
+  let requestedURL = urlDatabase[urlID].longURL;
 
   // Check if user is auth to modify URL
-  if (!checkURLAuth(requestedURL, urlsForUser(req.session.user_id, urlDatabase))) {
+  if (!checkURLAuth(requestedURL, urlsForUser(userID, urlDatabase))) {
     return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!");
   }
 
-  urlDatabase[req.params.id] = {
-    longURL: req.body.editURL,
-    userID: req.session.user_id,
+  urlDatabase[urlID] = {
+    longURL: editURL,
+    userID: userID,
   };
 
   res.redirect("/urls");
