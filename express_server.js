@@ -43,11 +43,13 @@ const urlDatabase = {
  */
 
 app.use(cookieSession({
+
   name: 'session',
   keys: ['Secret345'],
 
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
+
 }));
 
 
@@ -68,10 +70,12 @@ app.get("/", (req, res) => {
   }
 
   return res.redirect("/urls");
+
 });
 
 // GET /urls
 app.get("/urls", (req, res) => {
+
   let userID = req.session.user_id;
 
   // Check if user logged in
@@ -86,10 +90,12 @@ app.get("/urls", (req, res) => {
   };
 
   res.render("urls_index", templateVars);
+
 });
 
 // GET /urls/new
 app.get("/urls/new", (req, res) => {
+
   const templateVars = {
     user: users[req.session.user_id],
     currentPage: "/urls/new",
@@ -101,6 +107,7 @@ app.get("/urls/new", (req, res) => {
   }
 
   res.render("urls_new", templateVars);
+
 });
 
 // GET /urls/:id
@@ -129,7 +136,9 @@ app.get("/urls/:id", (req, res) => {
     user: users[req.session.user_id],
     currentPage: "/urls/:id",
   };
+
   res.render("urls_show", templateVars);
+
 });
 
 // GET /u/:id
@@ -143,6 +152,7 @@ app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id].longURL;
 
   res.redirect(longURL);
+
 });
 
 // GET /register
@@ -157,11 +167,14 @@ app.get("/register", (req, res) => {
   if (templateVars.user) {
     return res.redirect("/urls");
   }
+
   res.render("account_registration", templateVars);
+
 });
 
 // GET /login
 app.get("/login", (req, res) => {
+
   const templateVars = {
     user: users[req.session.user_id],
     currentPage: "/login",
@@ -173,6 +186,7 @@ app.get("/login", (req, res) => {
   }
 
   res.render("account_login", templateVars);
+
 });
 
 /**
@@ -190,12 +204,14 @@ app.post("/urls", (req, res) => {
   }
 
   newSiteID = generateRandomString();
+
   urlDatabase[newSiteID] = {
     longURL: req.body.longURL,
     userID: req.session.user_id,
   };
 
   res.redirect(`/urls/${newSiteID}`); // Redirect to new URL page
+
 });
 
 // POST /urls/:id/delete
@@ -215,13 +231,11 @@ app.post("/urls/:id/delete", (req, res) => {
 
   // Check if user is auth to modify URL
   if (!checkURLAuth(requestedURL, urlsForUser(req.session.user_id, urlDatabase))) {
-
     return res.status(403).send("Unauthorized! The requested URL does not belong to the current user!");
   }
 
   delete urlDatabase[req.params.id];
   res.redirect("/urls"); // Redirect to new URL page
-
 
 });
 
@@ -249,11 +263,14 @@ app.post("/urls/:id", (req, res) => {
     longURL: req.body.editURL,
     userID: req.session.user_id,
   };
+
   res.redirect("/urls");
+
 });
 
 // POST /login
 app.post("/login", (req, res) => {
+
   const { email, password } = req.body;
 
   let user = userLookup(email, users);
@@ -269,17 +286,23 @@ app.post("/login", (req, res) => {
   }
 
   req.session.user_id = user.id;
+
   res.redirect("/urls");
+
 });
 
 // POST /logout
 app.post("/logout", (req, res) => {
+
   req.session = null;
+
   res.redirect("/login");
+
 });
 
 // POST /register
 app.post("/register", (req, res) => {
+  
   const userID = `user-${generateRandomString()}`;
 
   // Check if email and password are defined
@@ -301,6 +324,7 @@ app.post("/register", (req, res) => {
   req.session.user_id = userID;
 
   res.redirect("/urls");
+
 });
 
 /**
@@ -310,5 +334,7 @@ app.post("/register", (req, res) => {
  */
 
 app.listen(PORT, () => {
+
   console.log(`Example app listening on port ${PORT}!`);
+
 });
